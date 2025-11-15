@@ -37,6 +37,7 @@ async function connectDB(): Promise<typeof mongoose> {
         if (!MONGODB_URI) {
             throw new Error("Please define the MONGODB_URI environment variable inside .env.local")
         }
+
         const options = {
             bufferCommands: false, // Disable Mongoose buffering
         }
@@ -53,6 +54,7 @@ async function connectDB(): Promise<typeof mongoose> {
     } catch (error) {
         // Reset promise on error to allow retry
         cached.promise = null
+
         throw error
     }
 
