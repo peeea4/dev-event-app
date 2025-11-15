@@ -1,36 +1,204 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DevEvent App
 
-## Getting Started
+Платформа для поиска и управления событиями для разработчиков. Централизованный хаб для хакатонов, митапов и конференций.
 
-First, run the development server:
+## 🚀 Возможности
+
+-   **Просмотр событий** — каталог событий с детальной информацией
+-   **Создание событий** — API для добавления новых событий с загрузкой изображений
+-   **Бронирование** — система регистрации на события
+-   **Фильтрация** — поиск событий по различным параметрам (дата, режим проведения, аудитория)
+-   **Современный UI** — интерактивный интерфейс с анимациями
+
+## 🛠 Технологии
+
+-   **Frontend**: Next.js 16, React 19, TypeScript
+-   **Styling**: Tailwind CSS 4
+-   **Database**: MongoDB с Mongoose
+-   **Storage**: Cloudinary для хранения изображений
+-   **Analytics**: PostHog
+-   **Fonts**: Schibsted Grotesk, Martian Mono
+
+## 📋 Требования
+
+-   Node.js 18+
+-   MongoDB (локально или MongoDB Atlas)
+-   Cloudinary аккаунт (для загрузки изображений)
+-   PostHog аккаунт (опционально, для аналитики)
+
+## 🔧 Установка
+
+1. Клонируйте репозиторий:
+
+```bash
+git clone https://github.com/yourusername/dev-event-app.git
+cd dev-event-app
+```
+
+2. Установите зависимости:
+
+```bash
+npm install
+```
+
+3. Создайте файл `.env.local` в корне проекта:
+
+```env
+MONGODB_URI=your_mongodb_connection_string
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+NEXT_PUBLIC_POSTHOG_KEY=your_posthog_key (опционально)
+NEXT_PUBLIC_POSTHOG_HOST=your_posthog_host (опционально)
+```
+
+4. Запустите сервер разработки:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost:3000](http://localhost:3000) в браузере.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Структура проекта
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+dev-event-app/
+├── app/                    # Next.js App Router
+│   ├── api/               # API routes
+│   │   └── events/        # API для работы с событиями
+│   ├── layout.tsx         # Корневой layout
+│   └── page.tsx           # Главная страница
+├── components/            # React компоненты
+│   ├── EventCard.tsx      # Карточка события
+│   ├── ExploreBtn.tsx     # Кнопка исследования
+│   ├── LightRays.tsx      # Анимация световых лучей
+│   └── Navbar.tsx         # Навигационная панель
+├── database/              # Модели базы данных
+│   ├── event.model.ts     # Модель события
+│   ├── booking.model.ts   # Модель бронирования
+│   └── index.ts           # Экспорт моделей
+├── lib/                   # Утилиты и конфигурация
+│   ├── mongodb.ts         # Подключение к MongoDB
+│   ├── constants.ts       # Константы приложения
+│   └── utils.ts           # Вспомогательные функции
+└── public/                # Статические файлы
+    ├── icons/             # Иконки
+    └── images/            # Изображения
+```
 
-## Learn More
+## 📡 API Endpoints
 
-To learn more about Next.js, take a look at the following resources:
+### GET `/api/events`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Получить список всех событий.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Ответ:**
 
-## Deploy on Vercel
+```json
+{
+  "message": "Successfully fetched events",
+  "events": [...]
+}
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### POST `/api/events`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Создать новое событие.
+
+**Тело запроса (FormData):**
+
+-   `title` (string, required) - Название события
+-   `description` (string, required) - Описание
+-   `overview` (string, required) - Краткий обзор
+-   `image` (File, required) - Изображение события
+-   `venue` (string, required) - Место проведения
+-   `location` (string, required) - Локация
+-   `date` (string, required) - Дата
+-   `time` (string, required) - Время
+-   `mode` (string, required) - Режим: "online" | "offline" | "hybrid"
+-   `audience` (string, required) - Целевая аудитория
+-   `agenda` (string[], required) - Программа события
+-   `organizer` (string, required) - Организатор
+-   `tags` (string[], required) - Теги
+
+**Ответ:**
+
+```json
+{
+  "message": "Event created successfully",
+  "event": {...}
+}
+```
+
+## 🗄 Модели данных
+
+### Event
+
+-   `title` - Название события
+-   `slug` - URL-friendly идентификатор (генерируется автоматически)
+-   `description` - Полное описание
+-   `overview` - Краткий обзор
+-   `image` - URL изображения
+-   `venue` - Место проведения
+-   `location` - Локация
+-   `date` - Дата (ISO формат)
+-   `time` - Время (HH:MM)
+-   `mode` - Режим проведения (online/offline/hybrid)
+-   `audience` - Целевая аудитория
+-   `agenda` - Массив пунктов программы
+-   `organizer` - Организатор
+-   `tags` - Массив тегов
+-   `createdAt` - Дата создания
+-   `updatedAt` - Дата обновления
+
+### Booking
+
+-   `eventId` - ID события (ObjectId)
+-   `email` - Email пользователя
+-   `createdAt` - Дата создания
+-   `updatedAt` - Дата обновления
+
+## 🚀 Деплой
+
+### Vercel (рекомендуется)
+
+1. Подключите репозиторий к Vercel
+2. Добавьте переменные окружения в настройках проекта
+3. Деплой произойдет автоматически
+
+### Другие платформы
+
+```bash
+npm run build
+npm start
+```
+
+## 📝 Скрипты
+
+-   `npm run dev` - Запуск сервера разработки
+-   `npm run build` - Сборка production версии
+-   `npm start` - Запуск production сервера
+-   `npm run lint` - Проверка кода линтером
+
+## 🤝 Вклад
+
+Вклад в проект приветствуется! Пожалуйста:
+
+1. Форкните репозиторий
+2. Создайте ветку для новой функции (`git checkout -b feature/amazing-feature`)
+3. Закоммитьте изменения (`git commit -m 'Add some amazing feature'`)
+4. Запушьте в ветку (`git push origin feature/amazing-feature`)
+5. Откройте Pull Request
+
+## 📄 Лицензия
+
+Этот проект является личным проектом (private).
+
+## 👤 Автор
+
+Разработано как pet-project для изучения современных веб-технологий.
+
+---
+
+**Примечание**: Убедитесь, что все переменные окружения настроены правильно перед запуском приложения.
