@@ -70,6 +70,9 @@ BookingSchema.index({ eventId: 1, createdAt: -1 })
 // Create index on email for user booking lookups
 BookingSchema.index({ email: 1 })
 
+// Enforce one booking per event per email
+BookingSchema.index({ eventId: 1, email: 1 }, { unique: true, name: "uniq_event_email" })
+
 // Enforce one booking per events per email
 BookingSchema.index({ eventId: 1, email: 1 }, { unique: true, name: "uniq_event_email" })
 const Booking = models.Booking || model<IBooking>("Booking", BookingSchema)
